@@ -19,6 +19,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const themeColorInput = document.getElementById('theme-color');
     const fontSelect = document.getElementById('font-select');
     const btnDownload = document.getElementById('btn-download');
+    const btnClear = document.getElementById('btn-clear');
+    const outputImg = document.getElementById('output-img');
     
     let state = {
         template: 'magazine',
@@ -132,10 +134,26 @@ document.addEventListener('DOMContentLoaded', () => {
     async function render() {
         if (state.isRendering) return;
         state.isRendering = true;
+        
+        // 為了支援手機長按，渲染時先隱藏圖片
+        outputImg.style.opacity = '0.5';
+
         const w = 1080, h = state.size === '9-16' ? 1920 : 1080;
         canvas.width = w; canvas.height = h;
         ctx.clearRect(0, 0, w, h);
-        try { await drawFullTemplate(ctx, w, h); } finally { state.isRendering = false; }
+        
+        try { 
+            await drawFullTemplate(ctx, w, h); 
+            // 關鍵：將 Canvas 內容轉為 Image 支援手機長按
+            outputImg.src = canvas.toDataURL('image/png', 0.9);
+            outputImg.style.display = 'block';
+            outputImg.style.opacity = '1';
+            canvas.style.display = 'none'; // 隱藏 Canvas，讓使用者長按的是 Image
+        } catch (e) {
+            console.error("渲染出錯:", e);
+        } finally { 
+            state.isRendering = false; 
+        }
     }
 
     async function drawFullTemplate(ctx, w, h) {
@@ -234,6 +252,33 @@ document.addEventListener('DOMContentLoaded', () => {
             const t = btnCopyLink.textContent; btnCopyLink.textContent = '✅ 已複製';
             setTimeout(() => btnCopyLink.textContent = t, 2000);
         });
+    });
+
+    // --- Clear Function ---
+    btnClear.addEventListener('click', () => {
+        if (!confirm('確定要清空所有資訊嗎？')) return;
+        
+        // 重設狀態
+        state.name = '質感生活系列｜極簡保溫杯';
+        state.price = '499';
+        state.oldPrice = '';
+        state.affLink = 'https://shopee.tw';
+        state.productImage = null;
+        
+        if (currentObjectUrl) {
+            URL.revokeObjectURL(currentObjectUrl);
+            currentObjectUrl = null;
+        }
+
+        // 重設 UI
+        smartInput.value = '';
+        prodNameInput.value = state.name;
+        prodPriceInput.value = state.price;
+        prodOldPriceInput.value = '';
+        affLinkInput.value = state.affLink;
+        imageInput.value = '';
+        
+        render();
     });
 
     document.fonts.ready.then(() => render());

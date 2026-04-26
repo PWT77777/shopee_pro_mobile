@@ -24,6 +24,7 @@
             <section class="preview-section">
                 <div class="canvas-container">
                     <canvas id="main-canvas"></canvas>
+                    <img id="output-img" alt="海報預覽" style="display:none; width: 100%; height: auto; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.2);">
                     <div id="qrcode-temp" style="display:none"></div>
                 </div>
                 <div class="preview-hint">長按儲存圖片 | 電腦：點擊下方下載</div>
@@ -105,8 +106,9 @@
                     </div>
                 </div>
 
-                <div class="actions">
-                    <button id="btn-download" class="primary-btn">下載高品質海報</button>
+                <div class="actions" style="display: flex; gap: 10px;">
+                    <button id="btn-clear" class="secondary-btn" style="flex: 1;">清空資訊</button>
+                    <button id="btn-download" class="primary-btn" style="flex: 2;">下載高品質海報</button>
                 </div>
             </section>
         </main>
