@@ -37,19 +37,53 @@ document.addEventListener('DOMContentLoaded', () => {
     btnParse.addEventListener('click', () => {
         let raw = smartInput.value.trim();
         if (!raw) return;
+
+        // 1. 抓取連結
         const linkMatch = raw.match(/https?:\/\/(shope\.ee|shopee\.tw|s\.shopee\.tw)\/[^\s]+/);
-        if (linkMatch) { state.affLink = linkMatch[0]; affLinkInput.value = state.affLink; }
-        const priceMatch = raw.match(/\$\s*([\d,]+)/);
-        if (priceMatch) { state.price = priceMatch[1].replace(/,/g, ''); prodPriceInput.value = state.price; }
-        const bracketMatch = raw.match(/[『「【](.*?)[』」】]/);
-        if (bracketMatch && bracketMatch[1].length > 3) { state.name = bracketMatch[1].trim(); }
-        else {
-            let t = raw; if (linkMatch) t = t.replace(linkMatch[0], ''); if (priceMatch) t = t.replace(/\$\s*[\d,]+/g, '');
-            [/售價/g, /分享給你/g, /！/g, /，/g, /快來看看/g, /」/g, /「/g, /『/g, /』/g].forEach(r => t = t.replace(r, ' '));
-            let l = t.split('\n').map(x => x.trim()).filter(x => x.length > 2);
-            state.name = l.length > 0 ? l[0] : t.trim();
+        if (linkMatch) { 
+            state.affLink = linkMatch[0]; 
+            affLinkInput.value = state.affLink; 
         }
-        prodNameInput.value = state.name;
+
+        // 2. 抓取價格 (支援範圍與千分位)
+        const priceRegex = /\$\s*([\d,]+)(?:\s*[-~]\s*\$?\s*([\d,]+))?/;
+        const priceMatch = raw.match(priceRegex);
+        if (priceMatch) {
+            let p = priceMatch[1].replace(/,/g, '');
+            if (priceMatch[2]) p += ' - ' + priceMatch[2].replace(/,/g, '');
+            state.price = p;
+            prodPriceInput.value = state.price;
+        }
+
+        // 3. 抓取名稱 (優化精確度)
+        let cleanName = '';
+        
+        // 優先測試：蝦皮官方分享格式
+        const officialMatch = raw.match(/我在蝦皮購物發現了這份好物！(.*?)！/);
+        if (officialMatch && officialMatch[1].trim().length > 1) {
+            cleanName = officialMatch[1].trim();
+        } else {
+            // 備選測試：排除法
+            let t = raw;
+            if (linkMatch) t = t.replace(linkMatch[0], '');
+            // 移除價格區塊
+            t = t.replace(/\$\s*[\d,]+(?:\s*[-~]\s*\$?\s*[\d,]+)?/g, '');
+            
+            // 移除特定冗詞但保留標點
+            [/分享給你/g, /快來看看/g, /售價/g, /現在只要/g].forEach(r => t = t.replace(r, ''));
+            
+            let lines = t.split('\n').map(x => x.trim()).filter(x => x.length > 2);
+            if (lines.length > 0) {
+                // 取第一行作為名稱，並修剪行末可能殘留的標點
+                cleanName = lines[0].replace(/[！，。！、]$/, '').trim();
+            }
+        }
+
+        if (cleanName) {
+            state.name = cleanName;
+            prodNameInput.value = state.name;
+        }
+        
         render();
     });
 
