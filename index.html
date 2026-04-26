@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>蝦皮好物分享 | Aesthetic Pro v3.5</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&family=Noto+Sans+TC:wght@500;700;900&family=Noto+Serif+TC:wght@600;900&family=Outfit:wght@400;700;900&family=Playfair+Display:ital,wght@0,700;1,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+</head>
+<body>
+    <div class="app">
+        <header>
+            <div class="brand">
+                <span class="logo-icon">✨</span>
+                <h1>蝦皮好物分享</h1>
+            </div>
+            <div class="version">DESIGNER v3.5</div>
+        </header>
+
+        <main>
+            <section class="preview-section">
+                <div class="canvas-container">
+                    <canvas id="main-canvas"></canvas>
+                    <div id="qrcode-temp" style="display:none"></div>
+                </div>
+                <div class="preview-hint">長按儲存圖片 | 電腦：點擊下方下載</div>
+            </section>
+
+            <section class="editor-section">
+                <!-- Smart Paste Tool -->
+                <div class="card smart-box">
+                    <div class="card-header"><span class="icon">🤖</span><h3>智慧解析</h3></div>
+                    <textarea id="smart-input" placeholder="貼上蝦皮分享文字..."></textarea>
+                    <button id="btn-parse" class="secondary-btn">自動填充資訊</button>
+                </div>
+
+                <!-- Manual Controls -->
+                <div class="card control-box">
+                    <div class="input-group">
+                        <label>商品美照</label>
+                        <div class="upload-btn" id="upload-trigger">📸 選擇圖片</div>
+                        <input type="file" id="image-input" accept="image/*" hidden>
+                    </div>
+                    <div class="input-group">
+                        <label>商品名稱</label>
+                        <input type="text" id="prod-name" placeholder="解析後自動填寫...">
+                    </div>
+                    <div class="input-group">
+                        <label>分潤連結</label>
+                        <div class="row" style="grid-template-columns: 1fr auto;">
+                            <input type="url" id="aff-link" placeholder="https://shope.ee/...">
+                            <button id="btn-copy-link" class="secondary-btn" style="padding: 0 15px; width: auto;">📋 複製</button>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="input-group"><label>特價</label><input type="text" id="prod-price" placeholder="499"></div>
+                        <div class="input-group"><label>原價</label><input type="text" id="prod-old-price" placeholder="899"></div>
+                    </div>
+                </div>
+
+                <!-- Designer Controls -->
+                <div class="card designer-box">
+                    <div class="card-header"><span class="icon">🎨</span><h3>設計自定義</h3></div>
+                    
+                    <div class="input-group">
+                        <label>主題色調</label>
+                        <div class="color-picker-row">
+                            <input type="color" id="theme-color" value="#ee4d2d">
+                            <span id="color-hex">#ee4d2d</span>
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label>標題字體</label>
+                        <select id="font-select">
+                            <option value="Noto Sans TC">現代黑體 (Noto Sans)</option>
+                            <option value="Noto Serif TC">精品宋體 (Noto Serif)</option>
+                            <option value="Outfit">時尚歐風 (Outfit)</option>
+                            <option value="Playfair Display">優雅襯線 (Playfair)</option>
+                            <option value="Montserrat">重磅時尚 (Montserrat)</option>
+                        </select>
+                    </div>
+
+                    <div class="input-group">
+                        <label>風格模板</label>
+                        <div class="style-selector">
+                            <button class="style-btn active" data-tpl="magazine">雜誌精品</button>
+                            <button class="style-btn" data-tpl="aesthetic">韓系柔和</button>
+                            <button class="style-btn" data-tpl="luxury">奢華黑金</button>
+                            <button class="style-btn" data-tpl="cyber">科技霓虹</button>
+                            <button class="style-btn" data-tpl="polaroid">文青拍立得</button>
+                            <button class="style-btn" data-tpl="minimal">極簡格線</button>
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label>輸出尺寸</label>
+                        <div class="size-selector">
+                            <button class="size-btn active" data-size="9-16">9:16 (限動)</button>
+                            <button class="size-btn" data-size="1-1">1:1 (方圖)</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="actions">
+                    <button id="btn-download" class="primary-btn">下載高品質海報</button>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
